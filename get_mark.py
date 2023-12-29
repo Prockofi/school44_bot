@@ -32,12 +32,12 @@ def get(user_id, login, password, school, school_url):
     #Получаем сохраннёные в файле оценки
     with open('marks', 'r', encoding="utf-8") as file:
         read = file.read().split('\n')
-        for line in read:
-            if line[0:9] == user_id:
-                read_data = line[9:].split('#')
-                break
-            else:
-                read_data = ["None"]
+    for line in read:
+        if user_id in line:
+            read_data = line[9:].split('#')
+            break
+        else:
+            read_data = ["None"]
 
     #Сравниваем новые и старые оценки
     new_mark, old_mark = compare(result, read_data)
@@ -49,7 +49,7 @@ def get(user_id, login, password, school, school_url):
         for el in result:
             s += el + '#'
         s = user_id + '#' + s
-        read.remove(line)
+        read.remove(s)
         read.append(s)
         save_data = ''
         for el in read:
@@ -68,4 +68,3 @@ def compare(new_data, old_data):
         if not (i in new_data):
             old_mark.append(i)
     return new_mark, old_mark
-

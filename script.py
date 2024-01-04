@@ -4,7 +4,9 @@ from get_marks import get
 
 import time
 import telebot
-bot = telebot.TeleBot('')
+with open('token') as file:
+    token = file.read()
+bot = telebot.TeleBot(token)
 
 #Проходимся вечным циклом по файлу с Users
 while True:

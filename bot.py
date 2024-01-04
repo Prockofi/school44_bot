@@ -1,12 +1,14 @@
 import telebot, time
 from get_marks import get
 
-bot = telebot.TeleBot('TOKEN')
+with open('token') as file:
+    token = file.read()
+bot = telebot.TeleBot(token)
 
 #Отслеживаем команду /start
 @bot.message_handler(commands=["start"])
 def repeat_all_messages(message):
-    bot.send_message(message.chat.id, 'Чтобы бот присылал вам уведомления о изменениях в электронном дневнике, необходимо отправить ему сообщение с логином, паролем, название школы через запятую')
+    bot.send_message(message.chat.id, 'Чтобы бот присылал вам уведомления об изменениях в электронном дневнике, необходимо отправить ему сообщение с логином, паролем, названием школы через запятую')
 
 #Берём данные для авторизации
 @bot.message_handler(content_types=["text"])
@@ -26,8 +28,8 @@ def repeat_all_messages(message):
             str1 = str1.replace('\n\n', '\n')
         with open('users', 'w', encoding='utf-8') as file:
             file.write(str1)
-        bot.send_message(message.chat.id, 'Получилось!')
+        bot.send_message(message.chat.id, '🟢 Получилось!')
     except:
-        bot.send_message(message.chat.id, 'Не удалось!')
+        bot.send_message(message.chat.id, '🔴 Не удалось! ')
 
 bot.infinity_polling()

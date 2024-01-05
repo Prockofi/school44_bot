@@ -1,5 +1,6 @@
 import asyncio, datetime
 from netschoolapi import NetSchoolAPI as ns
+from replace_data import append, rep
 
 global result
 
@@ -16,7 +17,6 @@ async def main(login, password, school, school_url):
     data = str(data).split(' subject=')
 
     #Конвертируем полученную строку в список
-    print('ss')
     for line in data:
         for el in line.split():
             if ('mark=' in el) and (len(el) == 7):
@@ -44,18 +44,11 @@ def get(user_id, login, password, school, school_url):
 
     #Сохраняем новые оценки в виде строки, которая начинается с user_id
     #Каждая оценка записываеться через #
-    with open('marks', 'w', encoding="utf-8") as file:
-        s = ''
-        for el in result:
-            s += el + '#'
-        s = user_id + '#' + s
-        read.remove(s)
-        read.append(s)
-        save_data = ''
-        for el in read:
-            save_data += el + '\n'
-        save_data = save_data.replace('\n\n', '\n')
-        file.write(save_data)
+    data = user_id + '#' + '#'.join(result)
+    try:
+        rep(data, 'marks')
+    except:
+        append(data, 'marks')
     return new_mark, old_mark
 
 #Сравниваем оценки записанные в файл с актуальными оценками

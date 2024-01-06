@@ -1,21 +1,21 @@
 import asyncio, datetime
 from netschoolapi import NetSchoolAPI as ns
-from replace_data import append, rep
+from replace_data import append, rep, filt
 
 global result
 
 #Функция получения данных из дневника
 #На вход принимает логин, пароль, имя школы и url-адресс школы
 #Возращает данные в виде списка - ['5 Инфор (2023, 12, 28)']
-async def main(login, password, school, school_url):
+async def main(login, password, school, school_url, t=False):
     global result
     result = ''
     connect = ns(school_url)
     await connect.login(login, password, school)
     #Получение данных в период с 1 сентября по 31 мая
     data = await connect.diary(start=datetime.date(2023, 9, 1), end=datetime.date(2024, 5, 31))
+    print(type(data))
     data = str(data).split(' subject=')
-
     #Конвертируем полученную строку в список
     for line in data:
         for el in line.split():
@@ -25,6 +25,7 @@ async def main(login, password, school, school_url):
                 result += str(line.split())[str(line.split()).index('day=datetime.date(') + 17:str(line.split()).index('day=datetime.date(') + 37] + '#'
     await connect.logout()
     result = result.split('#')
+    #result = filt(result)
 
 #Основная функция выполнения, которую необходимо вызвать из бота
 def get(user_id, login, password, school, school_url):
@@ -46,9 +47,9 @@ def get(user_id, login, password, school, school_url):
     #Каждая оценка записываеться через #
     data = user_id + '#' + '#'.join(result)
     try:
-        rep(data, 'marks')
-    except:
         append(data, 'marks')
+    except:
+        rep(data, 'marks')
     return new_mark, old_mark
 
 #Сравниваем оценки записанные в файл с актуальными оценками

@@ -1,6 +1,6 @@
 import asyncio, datetime
 from netschoolapi import NetSchoolAPI as ns
-from replace_data import append, rep, filt
+from data import Data
 
 global result
 
@@ -45,10 +45,10 @@ def get(user_id, login, password, school, school_url):
     #Сохраняем новые оценки в виде строки, которая начинается с user_id
     #Каждая оценка записываеться через #
     data = user_id + '#' + '#'.join(result)
-    try:
-        append(data, 'marks')
-    except:
-        rep(data, 'marks')
+    if Data.append(data, 'marks'):
+        pass
+    else:
+        Data.replace(data, 'marks')
     return new_mark, old_mark
 
 #Сравниваем оценки записанные в файл с актуальными оценками

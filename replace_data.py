@@ -13,7 +13,7 @@ def append(new, file_name):
         data = file.read().split('\n')
     for i in range(len(data)):
         if new[:9] in data[i]:
-            int(new)
+            int('None')
     else:
         data.append(new)
     data = '\n'.join(data)

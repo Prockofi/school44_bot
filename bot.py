@@ -15,15 +15,15 @@ def repeat_all_messages(message):
     btn1 = types.KeyboardButton("Помощь")
     btn2 = types.KeyboardButton("Дневник")
     markup.add(btn1, btn2)
-    append(str(message.chat.id), 'users')
-    bot.send_message(message.chat.id, 'Для начала работы, необходимо авторизоваться', reply_markup=markup)
     with open('users', 'r', encoding='utf-8') as file:
         data = file.read().split('\n')
     for line in data:
         if (str(message.chat.id) in line) and (len(line.split('#')) > 3):
-            bot.send_message(message.chat.id, 'Вы авторизованы! Напишите /help для получения информации')
+            bot.send_message(message.chat.id, 'Вы авторизованы! Напишите /help для получения информации', reply_markup=markup)
             break
     else:
+        bot.send_message(message.chat.id, 'Для начала работы, необходимо авторизоваться', reply_markup=markup)
+        append(str(message.chat.id), 'users')
         bot.send_message(message.chat.id, 'Логин')
     
 @bot.message_handler(commands=["help"])

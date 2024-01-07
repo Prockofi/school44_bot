@@ -14,7 +14,6 @@ async def main(login, password, school, school_url, t=False):
     await connect.login(login, password, school)
     #Получение данных в период с 1 сентября по 31 мая
     data = await connect.diary(start=datetime.date(2023, 9, 1), end=datetime.date(2024, 5, 31))
-    print(type(data))
     data = str(data).split(' subject=')
     #Конвертируем полученную строку в список
     for line in data:

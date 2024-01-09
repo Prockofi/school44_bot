@@ -1,79 +1,69 @@
 class DataBase:
-    def __init__(self, name, args=False):
-        self.name = name
-        if args:
-            with open(f'{name}.db', 'w', encoding='utf-8') as db:
-                db.write('id | ' + ' | '.join(args))
-                self.names = args
-        else:
-            with open(f'{self.name}.db', 'r', encoding='utf-8') as db:
-                data = db.read().split('\n')
-                self.names = data[0].split(' | ')
-
-    def place(self, row_id, args=[]):
-        with open(f'{self.name}.db', 'r', encoding='utf-8') as db:
-            data = db.read().split('\n')
-        for row in data:
-            data_row = row.split(' | ')
-            if data_row[0] == str(row_id):
-                new_row = data_row.copy()
-                for el in args:
-                    if el in self.names:
-                        new_row[self.names.index(el)] = str(args.get(el))
-                data.remove(' | '.join(data_row))
-                data.append(' | '.join(new_row))
-                with open(f'{self.name}.db', 'w', encoding='utf-8') as db:
-                    db.write('\n'.join(data))
-                break
-        else:
-            new_row = [f'{str(row_id)}'] + ['None' for i in range(len(self.names)-1)]
-            for el in args:
-                if el in self.names:
-                    new_row[self.names.index(el)] = str(args.get(el))
-            data.append(' | '.join(new_row))
-            with open(f'{self.name}.db', 'w', encoding='utf-8') as db:
-                db.write('\n'.join(data))
-
-    def get(self, row_id, args={}):
-        with open(f'{self.name}.db', 'r', encoding='utf-8') as db:
-            data = db.read().split('\n')
-        for row in data:
-            data_row = row.split(' | ')
-            if args == {}:
-                if data_row[0] == str(row_id):
-                    return data_row
+    def __init__(self, name, fields=None):
+        with open(f'{name}.db', 'r+', encoding='utf-8') as db:
+            if fields:
+                db.write('id | ' + ' | '.join(fields))
+                self.headers = fields
             else:
-                if data_row[0] == str(row_id):
-                    request = []
-                    for el in args:
-                        request.append(data_row[self.names.index(el)+1])
-                    return request
+                self.headers = (db.read().split('\n'))[0].split(' | ')
+            self.name = name
 
-    def not_empty(self, row_id):
+    def enter(self, post_id, fields):
         with open(f'{self.name}.db', 'r', encoding='utf-8') as db:
             data = db.read().split('\n')
-        for row in data:
-            data_row = row.split(' | ')
-            if data_row[0] == str(row_id):
+            for post in data:
+                post_data = post.split(' | ')
+                if post_data[0] == str(post_id):
+                    new_post_data = post_data.copy()
+                    for field in fields.keys():
+                        if field in self.headers:
+                            new_post_data[self.headers.index(field)] = str(fields.get(field))
+                    data.remove(' | '.join(post_data))
+                    data.append(' | '.join(new_post_data))
+                    break
+            else:
+                new_post_data = [str(post_id)] + ['None' for i in range(len(self.headers)-1)]
+                for field in fields.keys():
+                    if field in self.headers:
+                        new_post_data[self.headers.index(field)] = str(fields.get(field))
+                data.append(' | '.join(new_post_data))
+        with open(f'{self.name}.db', 'w', encoding='utf-8') as db:
+            db.write('\n'.join(data))
+
+    def remove(self, post_id):
+        with open(f'{self.name}.db', 'r', encoding='utf-8') as db:
+            data = db.read().split('\n')
+            for post in data:
+                post_data = post.split(' | ')
+                if post_data[0] == str(post_id):
+                    data.remove(' | '.join(post_data))
+                    break
+        with open(f'{self.name}.db', 'w', encoding='utf-8') as db:
+            db.write('\n'.join(data))
+    
+    def get(self, post_id, fields=None):
+        with open(f'{self.name}.db', 'r', encoding='utf-8') as db:
+            data = db.read().split('\n')
+        for post in data:
+            post_data = post.split(' | ')
+            if post_data[0] == str(post_id):
+                if fields:
+                    request = []
+                    for field in fields:
+                        request.append(post_data[self.headers.index(field)])
+                    return request
+                else:
+                    return post_data
+
+    def not_empty(self, post_id):
+        with open(f'{self.name}.db', 'r', encoding='utf-8') as db:
+            data = db.read().split('\n')
+        for post in data:
+            post_data = post.split(' | ')
+            if post_data[0] == str(post_id):
                 request = []
-                for el in data_row:
-                    if el != 'None':
-                        request.append(el)
+                for field in post_data:
+                    if field != 'None':
+                        request.append(field)
                 return request
         return False
-
-    def remove(self, row_id):
-        with open(f'{self.name}.db', 'r', encoding='utf-8') as db:
-            data = db.read().split('\n')
-        for row in data:
-            data_row = row.split(' | ')
-            if data_row[0] == str(row_id):
-                data.remove(' | '.join(data_row))
-                with open(f'{self.name}.db', 'w', encoding='utf-8') as db:
-                    db.write('\n'.join(data))
-                break
-
-    def all(self):
-        with open(f'{self.name}.db', 'r', encoding='utf-8') as db:
-            data = db.read().split('\n')
-        return data[1:]
